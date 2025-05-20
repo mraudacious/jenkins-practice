@@ -2,41 +2,45 @@ pipeline {
     agent any
 
     environment {
-        VENV = 'venv'
+        IMAGE_NAME = 'jenkins-practice-app'
+        APP_DIR = 'app' // folder containing Dockerfile, app.py, and requirements.txt
     }
 
     stages {
-        stage ("Install") {
+        stage('Clone Repository') {
             steps {
-                sh '''
-                    python3 -m venv $VENV
-                    . $VENV/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
-                '''
-            }
-        }
-        stage ("Linting") {
-            steps {
-                script {
-                    echo "This is my Linting Step"
-                }
-            }
-        }
-        stage ("Install Packages") {
-            steps {
-                script {
-                    echo "This is Install PAkcges Step"
-                }
-            }
-        }
-        stage ("Run Application") {
-            steps {
-                script {
-                    echo "This is my Run applcaition Step"
-                }
+                git url: 'https://github.com/mraudacious/jenkins-practice.git'
             }
         }
 
+        stage('Docker Build') {
+            steps {
+                bat "docker build -t %IMAGE_NAME% .\\%APP_DIR%"
+            }
+        }
+
+        stage('Docker Run') {
+            steps {
+                bat "docker run -d -p 5000:5000 %IMAGE_NAME%"
+            }
+        }
+
+        stage('Linting') {
+            steps {
+                echo 'Linting step would go here.'
+            }
+        }
+
+        stage('Install Packages') {
+            steps {
+                echo 'Install packages step would go here.'
+            }
+        }
+
+        stage('Run Application') {
+            steps {
+                echo 'Application is running inside Docker container.'
+            }
+        }
     }
 }
