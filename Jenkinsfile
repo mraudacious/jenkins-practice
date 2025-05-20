@@ -7,12 +7,6 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                git url: 'https://github.com/mraudacious/jenkins-practice.git'
-            }
-        }
-
         stage('Docker Build') {
             steps {
                 bat "docker build -t %IMAGE_NAME% .\\%APP_DIR%"
